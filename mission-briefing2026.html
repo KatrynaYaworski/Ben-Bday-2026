@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CLASSIFIED // MISSION BRIEFING</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Russo+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        background: #000000;
+      }
+
+      body {
+        background: #000000;
+        color: #00ff41;
+        font-family: "Share Tech Mono", monospace;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+
+      .scanline {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 255, 65, 0.02) 3px,
+          rgba(0, 255, 65, 0.02) 4px
+        );
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      /* ======================== */
+      /*     LOCK SCREEN          */
+      /* ======================== */
+      .lock-screen {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+        text-align: center;
+        position: relative;
+        background: #000000;
+      }
+
+      .lock-screen.hidden {
+        display: none;
+      }
+
+      .lock-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+      }
+
+      .lock-title {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 28px;
+        color: #ff0000;
+        letter-spacing: 6px;
+        text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+        margin-bottom: 6px;
+      }
+
+      .lock-subtitle {
+        font-size: 14px;
+        letter-spacing: 5px;
+        color: rgba(0, 255, 65, 0.4);
+        margin-bottom: 40px;
+      }
+
+      .access-box {
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        background: rgba(0, 255, 65, 0.03);
+        padding: 30px 24px;
+        position: relative;
+      }
+
+      .access-box::before {
+        content: "// IDENTITY VERIFICATION REQUIRED //";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000000;
+        padding: 0 12px;
+        font-size: 14px;
+        letter-spacing: 2px;
+        color: rgba(0, 255, 65, 0.3);
+        white-space: nowrap;
+      }
+
+      .input-label {
+        font-family: "Orbitron", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        color: #00e5ff;
+        margin-bottom: 14px;
+        text-align: left;
+      }
+
+      .agent-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid #00ff41;
+        color: #fff;
+        font-family: "Russo One", sans-serif;
+        font-size: 22px;
+        padding: 10px 0;
+        outline: none;
+        text-transform: uppercase;
+        caret-color: #00ff41;
+        letter-spacing: 2px;
+      }
+
+      .agent-input::placeholder {
+        color: rgba(0, 255, 65, 0.2);
+        font-size: 16px;
+        text-transform: none;
+        letter-spacing: 1px;
+      }
+
+      .agent-input:focus {
+        border-bottom-color: #00e5ff;
+        box-shadow: 0 4px 15px rgba(0, 229, 255, 0.15);
+      }
+
+      .activate-btn {
+        margin-top: 24px;
+        width: 100%;
+        padding: 16px;
+        background: transparent;
+        border: 2px solid #00ff41;
+        color: #00ff41;
+        font-family: "Orbitron", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 6px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .activate-btn:hover {
+        background: #00ff41;
+        color: #000000;
+        box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+      }
+
+      .activate-btn:active {
+        transform: scale(0.97);
+      }
+
+      .activate-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .activate-btn:disabled:hover {
+        background: transparent;
+        color: #00ff41;
+        box-shadow: none;
+      }
+
+      .lock-footer {
+        margin-top: 30px;
+        font-size: 14px;
+        letter-spacing: 3px;
+        color: rgba(0, 255, 64, 0.519);
+      }
+
+      .warning-text {
+        margin-top: 16px;
+        font-size: 10px;
+        color: rgba(255, 68, 68, 0.5);
+        letter-spacing: 2px;
+        animation: blink 2s infinite;
+      }
+
+      /* ======================== */
+      /*     TRANSITION SCREEN    */
+      /* ======================== */
+      .transition-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #000000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 500;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .transition-screen.active {
+        display: flex;
+      }
+
+      .access-granted {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 26px;
+        color: #00ff41;
+        letter-spacing: 8px;
+        text-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+        animation: grantedPulse 0.5s ease-out;
+      }
+
+      .welcome-agent {
+        font-family: "Russo One", sans-serif;
+        font-size: 20px;
+        color: #00e5ff;
+        margin-top: 16px;
+        text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+      }
+
+      .loading-bar-container {
+        width: 280px;
+        height: 3px;
+        background: rgba(0, 255, 65, 0.1);
+        margin-top: 30px;
+        overflow: hidden;
+      }
+
+      .loading-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #00ff41, #00e5ff);
+        box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        transition: width 1.8s ease-in-out;
+      }
+
+      .loading-text {
+        margin-top: 12px;
+        font-size: 10px;
+        letter-spacing: 4px;
+        color: rgba(0, 255, 65, 0.4);
+      }
+
+      /* ======================== */
+      /*     MISSION BRIEFING     */
+      /* ======================== */
+      .briefing {
+        display: none;
+        padding: 20px 30px;
+        max-width: 720px;
+        margin: 0 auto;
+        background: #000000;
+      }
+
+      .briefing.active {
+        display: block;
+      }
+
+      .classified-banner {
+        text-align: center;
+        border: 3px solid #ff0000;
+        padding: 8px 20px;
+        margin-bottom: 30px;
+        position: relative;
+        animation: glitch 4s infinite;
+      }
+
+      .classified-banner::before,
+      .classified-banner::after {
+        content: "⚠";
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #ff0000;
+      }
+      .classified-banner::before {
+        left: 10px;
+      }
+      .classified-banner::after {
+        right: 10px;
+      }
+
+      .classified-text {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 22px;
+        color: #ff0000;
+        letter-spacing: 8px;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      }
+
+      .clearance-level {
+        font-size: 10px;
+        color: #ff4444;
+        letter-spacing: 4px;
+        margin-top: 4px;
+      }
+
+      .mission-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+      }
+
+      .mission-label {
+        font-size: 14px;
+        letter-spacing: 6px;
+        color: rgba(0, 255, 65, 0.5);
+        margin-bottom: 12px;
+      }
+
+      .mission-name {
+        font-family: "Russo One", sans-serif;
+        font-size: 28px;
+        color: #00ff41;
+        text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+        line-height: 1.3;
+      }
+
+      .mission-name .highlight {
+        color: #00e5ff;
+        text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+      }
+
+      .agent-tag-display {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 4px 16px;
+        border: 1px solid #00e5ff;
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: #00e5ff;
+      }
+
+      .operative-block {
+        background: rgba(0, 255, 65, 0.05);
+        border-left: 3px solid #00ff41;
+        padding: 18px;
+        margin-bottom: 24px;
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      .operative-block.reveal {
+        animation: fadeSlide 0.5s forwards;
+      }
+
+      .operative-block .label {
+        font-size: 10px;
+        letter-spacing: 4px;
+        color: rgba(0, 255, 65, 0.4);
+        margin-bottom: 8px;
+      }
+
+      .operative-block .value {
+        font-family: "Russo One", sans-serif;
+        font-size: 20px;
+        color: #fff;
+      }
+
+      .operative-block .sub {
+        font-size: 12px;
+        color: rgba(0, 255, 65, 0.6);
+        margin-top: 8px;
+        line-height: 1.5;
+      }
+
+      .agent-name-glow {
+        color: #00e5ff;
+        text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+      }
+
+      .timeline {
+        position: relative;
+        margin: 30px 0;
+        padding-left: 30px;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, #00ff41, #00e5ff, #ff0000);
+      }
+
+      .timeline-item {
+        position: relative;
+        margin-bottom: 36px;
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      .timeline-item.reveal {
+        animation: fadeSlide 0.5s forwards;
+      }
+
+      .timeline-dot {
+        position: absolute;
+        left: -26px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #000000;
+        border: 2px solid #00ff41;
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+      }
+
+      .timeline-item.main-event .timeline-dot {
+        border-color: #00e5ff;
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.7);
+        background: #00e5ff;
+      }
+
+      .timeline-item.final .timeline-dot {
+        border-color: #ff4444;
+        box-shadow: 0 0 12px rgba(255, 68, 68, 0.5);
+      }
+
+      .time-stamp {
+        font-family: "Orbitron", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: #00e5ff;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+
+      .event-title {
+        font-family: "Russo One", sans-serif;
+        font-size: 16px;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+
+      .event-detail {
+        font-size: 12px;
+        color: rgba(0, 255, 65, 0.6);
+        line-height: 1.7;
+        margin-bottom: 6px;
+      }
+
+      .event-location {
+        font-size: 11px;
+        color: rgba(0, 229, 255, 0.6);
+        margin-top: 8px;
+        letter-spacing: 1px;
+      }
+
+      .main-event-box {
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        background: rgba(0, 229, 255, 0.05);
+        padding: 16px;
+        margin-top: 10px;
+        position: relative;
+      }
+
+      .main-event-box::before {
+        /* content: '🔒'; */
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        font-size: 16px;
+      }
+      .mission-btn {
+        color: #00ff41;
+        text-decoration: none;
+        border: 1px solid #00ff41;
+        padding: 6px 14px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 10px;
+        letter-spacing: 3px;
+        display: inline-block;
+        margin-top: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .mission-btn:hover {
+        background-color: #00ff41;
+        color: #000;
+        box-shadow: 0 0 8px #00ff41, 0 0 16px #00ff41;
+      }
+      .rules-section {
+        margin-top: 30px;
+        border: 1px dashed rgba(255, 68, 68, 0.4);
+        padding: 16px;
+        background: rgba(255, 0, 0, 0.03);
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      .rules-section.reveal {
+        animation: fadeSlide 0.5s forwards;
+      }
+
+      .rules-header {
+        font-family: "Orbitron", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        color: #ff4444;
+        letter-spacing: 4px;
+        margin-bottom: 12px;
+      }
+
+      .rule {
+        font-size: 12px;
+        color: rgba(0, 255, 65, 0.7);
+        margin-bottom: 12px;
+        padding-left: 20px;
+        position: relative;
+        line-height: 1.6;
+      }
+
+      .rule::before {
+        content: ">";
+        position: absolute;
+        left: 0;
+        color: #00e5ff;
+        font-weight: bold;
+      }
+
+      .footer-block {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 255, 65, 0.15);
+        opacity: 0;
+      }
+
+      .footer-block.reveal {
+        animation: fadeSlide 0.6s forwards;
+      }
+
+      .birthday-msg {
+        font-family: "Russo One", sans-serif;
+        font-size: 22px;
+        color: #00e5ff;
+        text-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+        margin-bottom: 8px;
+      }
+
+      .birthday-sub {
+        font-size: 12px;
+        color: rgba(0, 255, 65, 0.5);
+        letter-spacing: 3px;
+      }
+
+      .bday-emoji {
+        font-size: 28px;
+        margin-top: 12px;
+        display: block;
+      }
+
+      .code-strip {
+        margin-top: 25px;
+        text-align: center;
+        font-size: 14px;
+        letter-spacing: 3px;
+        color: rgba(0, 255, 64, 0.51);
+        padding-bottom: 40px;
+      }
+
+      /* ANIMATIONS */
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes glitch {
+        0%,
+        95%,
+        100% {
+          opacity: 1;
+        }
+        96% {
+          opacity: 0.6;
+          transform: translateX(-2px);
+        }
+        97% {
+          opacity: 1;
+          transform: translateX(2px);
+        }
+        98% {
+          opacity: 0.8;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 0.7;
+        }
+      }
+
+      @keyframes grantedPulse {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .screen-flash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #00ff41;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 999;
+      }
+
+      .screen-flash.flash {
+        animation: flashAnim 0.4s ease-out;
+      }
+
+      @keyframes flashAnim {
+        0% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      /* ======================== */
+      /*   DESKTOP SCALING        */
+      /* ======================== */
+      @media (min-width: 768px) {
+        /* Lock screen */
+        .lock-icon {
+          font-size: 90px;
+        }
+        .lock-title {
+          font-size: 48px;
+          letter-spacing: 12px;
+        }
+        .lock-subtitle {
+          font-size: 15px;
+          letter-spacing: 8px;
+        }
+        .access-box {
+          max-width: 520px;
+          padding: 44px 38px;
+        }
+        .input-label {
+          font-size: 15px;
+          letter-spacing: 5px;
+        }
+        .agent-input {
+          font-size: 30px;
+          padding: 14px 0;
+        }
+        .agent-input::placeholder {
+          font-size: 20px;
+        }
+        .activate-btn {
+          font-size: 18px;
+          padding: 20px;
+          letter-spacing: 8px;
+        }
+        .warning-text {
+          font-size: 16px;
+        }
+        .lock-footer {
+          font-size: 14px;
+        }
+
+        /* Transition screen */
+        .access-granted {
+          font-size: 44px;
+          letter-spacing: 14px;
+        }
+        .welcome-agent {
+          font-size: 30px;
+        }
+        .loading-bar-container {
+          width: 440px;
+          height: 4px;
+        }
+        .loading-text {
+          font-size: 14px;
+        }
+
+        /* Briefing content */
+        .briefing {
+          max-width: 900px;
+          padding: 40px 60px;
+        }
+        .classified-banner {
+          padding: 14px 30px;
+          margin-bottom: 40px;
+        }
+        .classified-text {
+          font-size: 30px;
+          letter-spacing: 10px;
+        }
+        .clearance-level {
+          font-size: 13px;
+        }
+        .mission-label {
+          font-size: 15px;
+          letter-spacing: 8px;
+        }
+        .mission-name {
+          font-size: 42px;
+        }
+        .agent-tag-display {
+          font-size: 14px;
+          padding: 6px 22px;
+        }
+
+        /* Operative blocks */
+        .operative-block {
+          padding: 22px;
+          margin-bottom: 26px;
+        }
+        .operative-block .label {
+          font-size: 14px;
+        }
+        .operative-block .value {
+          font-size: 26px;
+        }
+        .operative-block .sub {
+          font-size: 15px;
+        }
+
+        /* Timeline */
+        .timeline {
+          padding-left: 40px;
+          margin: 40px 0;
+        }
+        .timeline-dot {
+          width: 18px;
+          height: 18px;
+          left: -36px;
+        }
+        .timeline-item {
+          margin-bottom: 36px;
+        }
+        .time-stamp {
+          font-size: 17px;
+        }
+        .event-title {
+          font-size: 22px;
+        }
+        .event-detail {
+          font-size: 15px;
+        }
+        .event-location {
+          font-size: 14px;
+        }
+        .main-event-box {
+          padding: 18px;
+        }
+
+        /* Rules section */
+        .rules-section {
+          padding: 24px;
+          margin-top: 40px;
+        }
+        .rules-header {
+          font-size: 15px;
+        }
+        .rule {
+          font-size: 15px;
+          margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .footer-block {
+          margin-top: 40px;
+          padding-top: 30px;
+        }
+        .birthday-msg {
+          font-size: 30px;
+        }
+        .birthday-sub {
+          font-size: 15px;
+        }
+        .bday-emoji {
+          font-size: 38px;
+        }
+        .code-strip {
+          font-size: 11px;
+        }
+      }
+
+      /* Extra large desktop */
+      @media (min-width: 1200px) {
+        .briefing {
+          max-width: 1000px;
+          padding: 50px 80px;
+        }
+        .lock-title {
+          font-size: 56px;
+        }
+        .mission-name {
+          font-size: 48px;
+        }
+        .operative-block .value {
+          font-size: 30px;
+        }
+        .event-title {
+          font-size: 24px;
+        }
+        .time-stamp {
+          font-size: 19px;
+        }
+        .birthday-msg {
+          font-size: 36px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scanline"></div>
+    <div class="screen-flash" id="flash"></div>
+
+    <!-- LOCK SCREEN -->
+    <div class="lock-screen" id="lockScreen">
+      <div class="lock-icon">🔐</div>
+      <div class="lock-title">CLASSIFIED</div>
+      <div class="lock-subtitle">AUTHORIZED PERSONNEL ONLY</div>
+
+      <div class="access-box">
+        <div class="input-label">ENTER AGENT NAME</div>
+        <input
+          type="text"
+          class="agent-input"
+          id="agentInput"
+          placeholder="your name here..."
+          maxlength="20"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="activate-btn" id="activateBtn" disabled>
+          ACTIVATE MISSION
+        </button>
+      </div>
+
+      <div class="warning-text">⚠ UNAUTHORIZED ACCESS WILL BE DETECTED ⚠</div>
+      <div class="lock-footer">YAWORSKI DEFENSE SYSTEMS v12.0</div>
+    </div>
+
+    <!-- TRANSITION SCREEN -->
+    <div class="transition-screen" id="transScreen">
+      <div class="access-granted">ACCESS GRANTED</div>
+      <div class="welcome-agent">
+        WELCOME, AGENT <span id="transAgentName"></span>
+      </div>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loadingBar"></div>
+      </div>
+      <div class="loading-text">DECRYPTING MISSION FILES...</div>
+    </div>
+
+    <!-- MISSION BRIEFING -->
+    <div class="briefing" id="briefing">
+      <div class="classified-banner">
+        <div class="classified-text">TOP SECRET</div>
+        <div class="clearance-level">CLEARANCE LEVEL: BIRTHDAY OPERATIVE</div>
+      </div>
+
+      <div class="mission-header">
+        <div class="mission-label">// MISSION BRIEFING //</div>
+        <div class="mission-name">
+          OPERATION:<br /><span class="highlight">BENJAMMIN TURNS 12</span>
+        </div>
+        <div class="agent-tag-display">
+          AGENT: <span id="displayAgentName"></span>
+        </div>
+      </div>
+
+      <div class="operative-block" data-delay="200">
+        <div class="label">OPERATIVE</div>
+        <div class="value">
+          <span class="agent-name-glow" id="opName"></span>
+        </div>
+        <div class="sub">
+          You have been selected for a top-level mission. This is not a drill.
+        </div>
+      </div>
+
+      <div class="operative-block" data-delay="500">
+        <div class="label">MISSION DATE</div>
+        <div class="value">WEDNESDAY // FEB 25</div>
+        <div class="sub">No excuses. No absences. We need your brain.</div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item" data-delay="800">
+          <div class="timeline-dot"></div>
+          <div class="time-stamp">1530 HRS (3:30 PM)</div>
+          <div class="event-title">EXTRACTION POINT</div>
+          <div class="event-detail">
+            Report to car rider pickup. You will be extracted from school
+            grounds. Look alive.
+          </div>
+          <div class="event-detail">
+            Agents must be secured before 1600 hours or risk parental interrogation.
+          </div>
+          <div class="event-location">📍 PILOT POINT — CAR RIDER LINE</div>
+          <div
+            class="vehicle-id"
+            style="
+              margin-top: 12px;
+              border: 1px solid rgba(0, 229, 255, 0.3);
+              background: rgba(0, 229, 255, 0.05);
+              padding: 12px;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 14px;
+                letter-spacing: 4px;
+                color: #00e5ff;
+                margin-bottom: 8px;
+              "
+            >
+              EXTRACTION VEHICLE — VISUAL ID
+            </div>
+            <img
+              src="Img/Tesla.png"
+              alt="White Tesla Model X"
+              style="
+                width: 65%;
+                max-width: 360px;
+                border-radius: 4px;
+                margin-bottom: 8px;
+                border: 1px solid rgba(0, 229, 255, 0.2);
+                box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            />
+            <div
+              style="
+                font-family: 'Russo One', sans-serif;
+                font-size: 14px;
+                color: #fff;
+              "
+            >
+              WHITE TESLA MODEL X
+            </div>
+            <div
+              style="
+                font-size: 14px;
+                color: rgba(0, 255, 65, 0.5);
+                margin-top: 4px;
+              "
+            >
+              ⚠ Wait for AGENT BEN's signal! Don't get into the wrong car.. That
+              would be awkward. 🦅
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-delay="1200">
+          <div class="timeline-dot"></div>
+          <div class="time-stamp">1545–1700 HRS (3:45-5:00)</div>
+          <div class="event-title">TRANSPORT TO BASE</div>
+          <div class="event-detail">
+            Squad rides together. Snacks provided. Hype levels: maximum.
+          </div>
+          <div class="event-location">
+            📍 EN ROUTE TO GRANDSCAPE — THE COLONY, TX
+          </div>
+        </div>
+
+        <div class="timeline-item main-event" data-delay="1600">
+          <div class="timeline-dot"></div>
+          <div class="time-stamp">1715 HRS (5:15)</div>
+          <div class="event-title">🔓 PRIMARY MISSION: THE PLAYGROUND</div>
+          <div class="main-event-box">
+            <div class="event-detail">
+              60 minutes. One room. Your squad vs. the clock.<br /><br />
+              Crack codes. Solve puzzles. Escape before time runs out.<br /><br />
+              <strong style="color: #00e5ff"
+                >THE ESCAPE GAME — GRANDSCAPE</strong
+              ><br />
+              Difficulty: 6/10 &nbsp;|&nbsp; Players: Up to 12<br /><br />
+              <a
+                href="https://theescapegame.com/the-colony/escape-rooms/playground/"
+                target="_blank"
+                class="mission-btn"
+                >🧠 STUDY THE MISSION INTEL</a
+              ><br />
+              <span
+                style="
+                  font-size: 16px;
+                  color: rgba(0, 255, 65, 0.4);
+                  margin-top: 6px;
+                  display: inline-block;
+                "
+                >↑ scope out what you're walking into ↑</span
+              ><br />
+              Don't let the team down. No pressure. 😏
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-delay="2000">
+          <div class="timeline-dot"></div>
+          <div class="time-stamp">1830 HRS (6:30)</div>
+          <div class="event-title">🍕 REFUEL AT CC'S</div>
+          <div class="event-detail">
+            You survived (hopefully). Time to eat. Birthday cake energy. You
+            earned it.
+          </div>
+          <div class="event-location">📍 CC'S</div>
+        </div>
+
+        <div class="timeline-item final" data-delay="2400">
+          <div class="timeline-dot"></div>
+          <div class="time-stamp">2000–2030 HRS (8:00-8:30)</div>
+          <div class="event-title">RETURN TO BASE</div>
+          <div class="event-detail">
+            All operatives returned home safely. Mission complete. Legend
+            status: unlocked.
+          </div>
+          <div class="event-location">📍 PILOT POINT — HOME DROP-OFF</div>
+        </div>
+      </div>
+
+      <div class="rules-section" data-delay="2800">
+        <div class="rules-header">⚠ FIELD NOTES</div>
+        <div class="rule">Wear comfortable shoes. You'll be moving.</div>
+        <div class="rule">Bring your brain. Leave your ego.</div>
+        <div class="rule">This is a TEAM mission. No solo heroes.</div>
+        <div class="rule">
+          What happens in the escape room stays in the escape room.
+        </div>
+        <div class="rule">Have fun or you're benched. That's an order.</div>
+      </div>
+
+      <div class="footer-block" data-delay="3200">
+        <div class="birthday-msg">HAPPY 12TH, BENJAMMIN 🎯</div>
+        <div class="birthday-sub">LET'S MAKE IT LEGENDARY</div>
+        <span class="bday-emoji">🎂🔓🧩🏆</span>
+      </div>
+
+      <div class="code-strip">
+        FILE-ID: BEN-BDAY-0225 // AUTH: YAWORSKI-CLASSIFIED // DO NOT DISTRIBUTE
+      </div>
+    </div>
+
+    <script>
+      const input = document.getElementById("agentInput");
+      const btn = document.getElementById("activateBtn");
+      const lockScreen = document.getElementById("lockScreen");
+      const transScreen = document.getElementById("transScreen");
+      const briefing = document.getElementById("briefing");
+      const flash = document.getElementById("flash");
+      const loadingBar = document.getElementById("loadingBar");
+
+      input.addEventListener("input", () => {
+        btn.disabled = input.value.trim().length === 0;
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && input.value.trim().length > 0) {
+          activate();
+        }
+      });
+
+      btn.addEventListener("click", activate);
+
+      function activate() {
+        const name = input.value.trim().toUpperCase();
+        if (!name) return;
+
+        const authorized = [
+          "WESS",
+          "LUKE",
+          "JACKSON",
+          "BEN",
+          "MATTHEW",
+          "DEAN",
+          "DAD",
+          "MOM",
+          "BENJAMMIN",
+          "BENJAMIN",
+        ];
+
+        if (!authorized.includes(name)) {
+          // ACCESS DENIED
+          flash.classList.add("flash");
+          setTimeout(() => flash.classList.remove("flash"), 400);
+          input.value = "";
+          btn.disabled = true;
+
+          const box = document.querySelector(".access-box");
+          const oldLabel = document.querySelector(".input-label");
+          const oldWarning = document.querySelector(".warning-text");
+
+          oldLabel.style.color = "#ff0000";
+          oldLabel.textContent = "⛔ ACCESS DENIED";
+          oldLabel.style.letterSpacing = "6px";
+          input.style.borderBottomColor = "#ff0000";
+          input.placeholder = "nice try...";
+          if (oldWarning) {
+            oldWarning.textContent = "⚠ UNAUTHORIZED OPERATIVE DETECTED ⚠";
+            oldWarning.style.color = "rgba(255, 0, 0, 0.7)";
+          }
+          box.style.borderColor = "rgba(255, 0, 0, 0.4)";
+          box.style.background = "rgba(255, 0, 0, 0.05)";
+
+          setTimeout(() => {
+            oldLabel.style.color = "#00e5ff";
+            oldLabel.textContent = "ENTER AGENT NAME";
+            oldLabel.style.letterSpacing = "4px";
+            input.style.borderBottomColor = "#00ff41";
+            input.placeholder = "your name here...";
+            if (oldWarning) {
+              oldWarning.textContent =
+                "⚠ UNAUTHORIZED ACCESS WILL BE DETECTED ⚠";
+              oldWarning.style.color = "rgba(255, 68, 68, 0.5)";
+            }
+            box.style.borderColor = "rgba(0, 255, 65, 0.2)";
+            box.style.background = "rgba(0, 255, 65, 0.03)";
+          }, 2500);
+
+          return;
+        }
+
+        // Flash effect
+        flash.classList.add("flash");
+        setTimeout(() => flash.classList.remove("flash"), 400);
+
+        setTimeout(() => {
+          lockScreen.classList.add("hidden");
+          transScreen.classList.add("active");
+          document.getElementById("transAgentName").textContent = name;
+
+          setTimeout(() => {
+            loadingBar.style.width = "100%";
+          }, 100);
+
+          setTimeout(() => {
+            transScreen.classList.remove("active");
+            briefing.classList.add("active");
+
+            document.getElementById("displayAgentName").textContent = name;
+            document.getElementById("opName").textContent = name;
+
+            const revealElements = briefing.querySelectorAll("[data-delay]");
+            revealElements.forEach((el) => {
+              const delay = parseInt(el.getAttribute("data-delay"));
+              setTimeout(() => {
+                el.classList.add("reveal");
+              }, delay);
+            });
+
+            window.scrollTo(0, 0);
+          }, 2400);
+        }, 300);
+      }
+    </script>
+  </body>
+</html>
